@@ -1,0 +1,63 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env/
+.venv/
+venv/
+ENV/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs & temp
+logs/
+*.log
+*.tmp
+*.temp
+
+# Byte-compiled / optimized / DLL files
+*.so
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Local config & secrets
+*.env
+.env.*
+.envrc
+secrets.json
+
+# Database & media
+surveillance.db
+*.sqlite3
+videos/
+snapshots/
+
+# Node (if any front-end tooling is used)
+node_modules/
+
+# Python notebooks checkpoints
+.ipynb_checkpoints/
+
+# Coverage / test
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Generated assets
+static/*.map
+static/cache/
+
+# OS-specific
+desktop.ini
