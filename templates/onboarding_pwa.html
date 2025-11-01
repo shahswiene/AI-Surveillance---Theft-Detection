@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2c3e50">
+    <title>Setup - AI Surveillance</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1d2e 0%, #2c3e50 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .onboarding-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+        
+        .onboarding-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .onboarding-header i {
+            font-size: 60px;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+        
+        .onboarding-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .onboarding-header p {
+            color: #95a5a6;
+            font-size: 14px;
+        }
+        
+        .onboarding-form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step.active .step-circle {
+            background: #3498db;
+            border-color: #3498db;
+        }
+        
+        .step.completed .step-circle {
+            background: #2ecc71;
+            border-color: #2ecc71;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+        
+        .step.active .step-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff !important;
+            font-size: 16px;
+            transition: all 0.3s;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            opacity: 1;
+        }
+        
+        .form-control:-webkit-autofill,
+        .form-control:-webkit-autofill:hover,
+        .form-control:-webkit-autofill:focus {
+            -webkit-text-fill-color: #ffffff !important;
+            -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.1) inset !important;
+            box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.1) inset !important;
+            color: #ffffff !important;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+        
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: #ffffff;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+            color: #ffffff;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #ffffff;
+        }
+        
+        .alert-success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            color: #ffffff;
+        }
+        
+        .camera-test {
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .camera-test img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .camera-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-testing {
+            background: rgba(241, 196, 15, 0.8);
+            color: #000;
+        }
+        
+        .status-connected {
+            background: rgba(46, 204, 113, 0.8);
+            color: #fff;
+        }
+        
+        .status-failed {
+            background: rgba(231, 76, 60, 0.8);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="onboarding-header">
+            <i class="fas fa-rocket"></i>
+            <h1>Welcome!</h1>
+            <p>Let's set up your surveillance system</p>
+        </div>
+        
+        <div class="onboarding-form">
+            <div id="alertMessage" class="alert alert-danger" style="display: none;"></div>
+            
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">Settings</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Camera</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Done</div>
+                </div>
+            </div>
+            
+            <!-- Step 1: Contact & Notification Settings -->
+            <div class="form-section active" id="step1">
+                <h3 style="margin-bottom: 20px;">Contact & Notification Settings</h3>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="+1 234 567 8900">
+                    <div class="help-text">For SMS notifications</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="emergencyContact">Emergency Contact</label>
+                    <input type="tel" class="form-control" id="emergencyContact" placeholder="+1 234 567 8900">
+                    <div class="help-text">Called when emergency triggered</div>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="autoEmergency" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;">
+                        <span>Enable Auto Emergency Call</span>
+                    </label>
+                    <div class="help-text" style="margin-left: 30px;">Automatically call emergency contact when theft detected</div>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="pushNotifications" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;" checked>
+                        <span>Enable Push Notifications</span>
+                    </label>
+                    <div class="help-text" style="margin-left: 30px;">Receive browser notifications for theft alerts</div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="skipOnboarding()">
+                        <i class="fas fa-forward"></i> Skip Setup
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep(2)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Camera Setup -->
+            <div class="form-section" id="step2">
+                <h3 style="margin-bottom: 20px;">Camera Setup</h3>
+                
+                <div class="form-group">
+                    <label for="rtspUrl">RTSP URL</label>
+                    <input type="text" class="form-control" id="rtspUrl" 
+                           placeholder="rtsp://192.168.1.100:8080/h264.sdp" required>
+                    <div class="help-text" style="color: #000000; background: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 5px;">Enter your camera's RTSP stream URL</div>
+                </div>
+                
+                <div class="camera-test" id="cameraTest">
+                    <div style="color: #95a5a6;">
+                        <i class="fas fa-video" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Camera preview will appear here</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" style="width: 100%; margin-bottom: 15px;" onclick="testCamera()">
+                    <i class="fas fa-play"></i> Test Connection
+                </button>
+                
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="prevStep(1)">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep(3)">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Completion -->
+            <div class="form-section" id="step3">
+                <div style="text-align: center; padding: 30px 0;">
+                    <i class="fas fa-check-circle" style="font-size: 80px; color: #2ecc71; margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 15px;">Setup Complete!</h3>
+                    <p style="color: #95a5a6; margin-bottom: 30px;">
+                        Your surveillance system is ready to use
+                    </p>
+                    
+                    <button class="btn btn-success" style="width: 100%;" onclick="completeOnboarding()">
+                        <i class="fas fa-rocket"></i> Start Monitoring
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentStep = 1;
+        
+        function updateStepIndicator(step) {
+            // Update step circles
+            document.querySelectorAll('.step').forEach((el, index) => {
+                const stepNum = index + 1;
+                if (stepNum < step) {
+                    el.classList.add('completed');
+                    el.classList.remove('active');
+                } else if (stepNum === step) {
+                    el.classList.add('active');
+                    el.classList.remove('completed');
+                } else {
+                    el.classList.remove('active', 'completed');
+                }
+            });
+        }
+        
+        function nextStep(step) {
+            // Hide current section
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // Show next section
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            // Update indicator
+            currentStep = step;
+            updateStepIndicator(step);
+        }
+        
+        function prevStep(step) {
+            nextStep(step);
+        }
+        
+        async function testCamera() {
+            const rtspUrl = document.getElementById('rtspUrl').value;
+            if (!rtspUrl) {
+                showAlert('Please enter RTSP URL');
+                return;
+            }
+            
+            const testDiv = document.getElementById('cameraTest');
+            testDiv.innerHTML = `
+                <div style="color: #fff; text-align: center;">
+                    <div class="camera-status status-testing">Testing...</div>
+                    <i class="fas fa-spinner fa-spin" style="font-size: 40px; margin-bottom: 10px;"></i>
+                    <p>Connecting to camera...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch('/api/test-rtsp', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({rtsp_url: rtspUrl})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    testDiv.innerHTML = `
+                        <img src="data:image/jpeg;base64,${data.frame}" alt="Camera preview">
+                        <div class="camera-status status-connected"><i class="fas fa-check"></i> Connected</div>
+                    `;
+                } else {
+                    testDiv.innerHTML = `
+                        <div style="color: #e74c3c; text-align: center;">
+                            <div class="camera-status status-failed">Failed</div>
+                            <i class="fas fa-exclamation-triangle" style="font-size: 40px; margin-bottom: 10px;"></i>
+                            <p>${data.message || 'Connection failed'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                testDiv.innerHTML = `
+                    <div style="color: #e74c3c; text-align: center;">
+                        <div class="camera-status status-failed">Error</div>
+                        <i class="fas fa-exclamation-triangle" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Connection error</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function completeOnboarding() {
+            const phone = document.getElementById('phone').value;
+            const emergencyContact = document.getElementById('emergencyContact').value;
+            const autoEmergency = document.getElementById('autoEmergency').checked;
+            const pushNotifications = document.getElementById('pushNotifications').checked;
+            const rtspUrl = document.getElementById('rtspUrl').value;
+            
+            try {
+                const response = await fetch('/api/complete-onboarding', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        phone: phone,
+                        emergency_contact: emergencyContact,
+                        emergency_auto: autoEmergency ? 1 : 0,
+                        notifications_enabled: pushNotifications ? 1 : 0,
+                        rtsp_url: rtspUrl
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    showAlert(data.message || 'Failed to save settings');
+                }
+            } catch (error) {
+                showAlert('Error saving settings');
+            }
+        }
+        
+        function skipOnboarding() {
+            if (confirm('Skip setup? You can configure these settings later.')) {
+                window.location.href = '/';
+            }
+        }
+        
+        function showAlert(message) {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

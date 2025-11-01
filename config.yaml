@@ -1,0 +1,35 @@
+# YOLO11 Backpack Detection Configuration
+
+# Model Settings
+model:
+  path: "yolo11s.pt"  # Options: yolo11n.pt, yolo11s.pt, yolo11m.pt, yolo11l.pt, yolo11x.pt
+  confidence_threshold: 0.5
+
+# RTSP Stream Settings
+rtsp:
+  # Example RTSP URLs:
+  # - rtsp://username:password@192.168.1.100:554/stream1
+  # - rtsp://admin:admin123@camera_ip:554/Streaming/Channels/101
+  url: ""  # Leave empty to use webcam
+  reconnect_delay: 2  # seconds
+  buffer_size: 1
+
+# Video Source Settings
+video:
+  source: 0  # 0 for webcam, or path to video file
+  display: true
+  save_output: false
+  output_path: "backpack_detection_output.mp4"
+
+# Detection Settings
+detection:
+  target_class: "backpack"  # COCO class ID: 24
+  show_confidence: true
+  show_fps: true
+  show_timestamp: true
+
+# Performance Settings
+performance:
+  frame_skip: 0  # Skip frames to improve performance (0 = no skip)
+  resize_width: 0  # Resize frame width (0 = no resize)
+  resize_height: 0  # Resize frame height (0 = no resize)

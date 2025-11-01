@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2c3e50">
+    <title>Settings - AI Surveillance</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1d2e 0%, #2c3e50 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding-bottom: 30px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(26, 29, 46, 0.95);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            margin: 0;
+        }
+        
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .settings-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save:hover {
+            background: #2980b9;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            color: #ffffff;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='/'">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1>Settings</h1>
+    </div>
+    
+    <div class="container">
+        <div id="successMessage" class="alert alert-success" style="display: none;">
+            Settings saved successfully!
+        </div>
+        
+        <form id="settingsForm">
+            <!-- Camera Settings -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-camera"></i>
+                    Camera Settings
+                </div>
+                
+                <div class="form-group">
+                    <label for="rtsp_url">RTSP URL</label>
+                    <input type="text" class="form-control" id="rtsp_url" 
+                           value="{{ settings.rtsp_url }}" required>
+                    <div class="help-text">Example: rtsp://192.168.1.100:8080/h264.sdp</div>
+                </div>
+            </div>
+            
+            <!-- Detection Settings -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-cog"></i>
+                    Detection Settings
+                </div>
+                
+                <div class="form-group">
+                    <label for="model_path">Model</label>
+                    <select class="form-control" id="model_path">
+                        <option value="yolo11n.pt" {{ 'selected' if settings.model_path == 'yolo11n.pt' else '' }}>YOLO11n (Fastest)</option>
+                        <option value="yolo11s.pt" {{ 'selected' if settings.model_path == 'yolo11s.pt' else '' }}>YOLO11s (Balanced)</option>
+                        <option value="yolo11m.pt" {{ 'selected' if settings.model_path == 'yolo11m.pt' else '' }}>YOLO11m (Accurate)</option>
+                    </select>
+                    <div class="help-text">Smaller = faster, Larger = more accurate</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imgsz">Image Size</label>
+                    <select class="form-control" id="imgsz">
+                        <option value="320" {{ 'selected' if settings.imgsz == 320 else '' }}>320 (Fastest)</option>
+                        <option value="416" {{ 'selected' if settings.imgsz == 416 else '' }}>416 (Fast)</option>
+                        <option value="640" {{ 'selected' if settings.imgsz == 640 else '' }}>640 (Balanced)</option>
+                        <option value="800" {{ 'selected' if settings.imgsz == 800 else '' }}>800 (Accurate)</option>
+                        <option value="1280" {{ 'selected' if settings.imgsz == 1280 else '' }}>1280 (Most Accurate)</option>
+                    </select>
+                    <div class="help-text">Lower = faster, Higher = more accurate</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="frame_skip">Frame Skip</label>
+                    <input type="number" class="form-control" id="frame_skip" 
+                           value="{{ settings.frame_skip }}" min="0" max="10">
+                    <div class="help-text">Skip N frames between detections (0 = no skip)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="recognition_interval">Recognition Interval</label>
+                    <input type="number" class="form-control" id="recognition_interval" 
+                           value="{{ settings.recognition_interval }}" min="10" max="120">
+                    <div class="help-text">Run face recognition every N frames</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="proximity_threshold">Proximity Threshold (pixels)</label>
+                    <input type="number" class="form-control" id="proximity_threshold" 
+                           value="{{ settings.proximity_threshold }}" min="50" max="300">
+                    <div class="help-text">Distance to associate person with bag</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="display_width">Display Width (pixels)</label>
+                    <input type="number" class="form-control" id="display_width" 
+                           value="{{ settings.display_width }}" min="320" max="1920" step="80">
+                    <div class="help-text">Smaller = better FPS (640 recommended)</div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Save Settings
+            </button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                rtsp_url: document.getElementById('rtsp_url').value,
+                model_path: document.getElementById('model_path').value,
+                imgsz: parseInt(document.getElementById('imgsz').value),
+                frame_skip: parseInt(document.getElementById('frame_skip').value),
+                recognition_interval: parseInt(document.getElementById('recognition_interval').value),
+                proximity_threshold: parseInt(document.getElementById('proximity_threshold').value),
+                display_width: parseInt(document.getElementById('display_width').value)
+            };
+            
+            try {
+                const response = await fetch('/settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const msg = document.getElementById('successMessage');
+                    msg.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        msg.style.display = 'none';
+                    }, 3000);
+                }
+            } catch (error) {
+                alert('Failed to save settings');
+            }
+        });
+    </script>
+</body>
+</html>

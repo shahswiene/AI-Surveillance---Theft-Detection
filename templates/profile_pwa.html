@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2c3e50">
+    <title>Profile - AI Surveillance</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1d2e 0%, #2c3e50 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding-bottom: 30px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(26, 29, 46, 0.95);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            margin: 0;
+        }
+        
+        .logout-btn {
+            background: #e74c3c;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .profile-avatar {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #ffffff;
+        }
+        
+        .username {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .user-role {
+            color: #95a5a6;
+            font-size: 14px;
+        }
+        
+        .settings-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .switch-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 28px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #2ecc71;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save:hover {
+            background: #2980b9;
+        }
+        
+        .alert-success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='/'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>Profile</h1>
+        </div>
+        <button class="logout-btn" onclick="window.location.href='/logout'">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+    
+    <div class="container">
+        <div class="profile-avatar">
+            <div class="avatar-circle">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="username">{{ user.username }}</div>
+            <div class="user-role">Administrator</div>
+        </div>
+        
+        <div id="successMessage" class="alert-success" style="display: none;">
+            Profile updated successfully!
+        </div>
+        
+        <form id="profileForm">
+            <!-- Contact Information -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-address-card"></i>
+                    Contact Information
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" 
+                           value="{{ user.email or '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" 
+                           value="{{ user.phone or '' }}">
+                </div>
+            </div>
+            
+            <!-- Notification Settings -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-bell"></i>
+                    Notifications
+                </div>
+                
+                <div class="switch-container">
+                    <span>Enable Push Notifications</span>
+                    <label class="switch">
+                        <input type="checkbox" id="notifications_enabled" 
+                               {{ 'checked' if user.notifications_enabled else '' }}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Emergency Settings -->
+            <div class="settings-section">
+                <div class="section-title">
+                    <i class="fas fa-phone"></i>
+                    Emergency Settings
+                </div>
+                
+                <div class="switch-container">
+                    <span>Auto Emergency Call</span>
+                    <label class="switch">
+                        <input type="checkbox" id="emergency_auto" 
+                               {{ 'checked' if user.emergency_auto else '' }}>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="emergency_contact">Emergency Contact</label>
+                    <input type="tel" class="form-control" id="emergency_contact" 
+                           value="{{ user.emergency_contact or '' }}" 
+                           placeholder="+1234567890">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                notifications_enabled: document.getElementById('notifications_enabled').checked ? 1 : 0,
+                emergency_auto: document.getElementById('emergency_auto').checked ? 1 : 0,
+                emergency_contact: document.getElementById('emergency_contact').value
+            };
+            
+            try {
+                const response = await fetch('/profile', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const msg = document.getElementById('successMessage');
+                    msg.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        msg.style.display = 'none';
+                    }, 3000);
+                }
+            } catch (error) {
+                alert('Failed to update profile');
+            }
+        });
+    </script>
+</body>
+</html>

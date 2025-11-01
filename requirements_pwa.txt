@@ -1,0 +1,12 @@
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.30.0
+pillow>=10.0.0
+Flask==3.0.0
+flask-socketio==5.3.5
+werkzeug==3.0.1
+python-socketio>=5.10.0
+eventlet>=0.33.3

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>AI Surveillance - Theft Detection</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/static/icon-192.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1d2e 0%, #2c3e50 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 60px;
+            background: rgba(26, 29, 46, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Video Container */
+        .video-container {
+            margin-top: 62px;
+            padding: 0 8px;
+            margin-bottom: 5px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        #videoFrame {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .video-stats {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .fps {
+            color: #2ecc71;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            background: rgba(26, 29, 46, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
+        }
+        
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(52, 73, 94, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #ffffff;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(52, 73, 94, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-btn i {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .nav-btn.active {
+            background: #3498db;
+            border-color: #3498db;
+        }
+        
+        .nav-btn.danger {
+            background: rgba(231, 76, 60, 0.8);
+            border-color: #e74c3c;
+        }
+        
+        .nav-btn.danger:hover {
+            background: #e74c3c;
+        }
+        
+        .nav-text {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .emergency-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        /* Alert Banner */
+        .alert-banner {
+            position: fixed;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: #e74c3c;
+            padding: 15px 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #ffffff;
+            z-index: 999;
+            display: none;
+            animation: pulse 1s infinite;
+        }
+        
+        .alert-banner.show {
+            display: block;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .status-active {
+            background: #2ecc71;
+            color: #fff;
+        }
+        
+        .status-inactive {
+            background: #95a5a6;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-info">
+            <i class="fas fa-clock"></i>
+            <span id="currentTime">--:-- --</span>
+            <span class="status-badge status-inactive" id="statusBadge">OFFLINE</span>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" onclick="window.location.href='/profile'">
+                <i class="fas fa-user"></i>
+            </button>
+            <button class="header-btn" onclick="window.location.href='/settings'">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Alert Banner -->
+    <div class="alert-banner" id="alertBanner">
+        🚨 THEFT DETECTED - LOCKDOWN
+    </div>
+    
+    <!-- Video Container -->
+    <div class="video-container">
+        <div class="video-wrapper">
+            <img id="videoFrame" src="/static/placeholder.jpg" alt="Video Stream">
+            <div class="video-stats">
+                <div class="fps">FPS: <span id="fpsCounter">0.0</span></div>
+                <div style="font-size: 11px; color: #bdc3c7;">
+                    <span id="resolution">1920x1080</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: #95a5a6;">Connecting to camera...</p>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-grid">
+            <button class="nav-btn" id="reloadBtn" onclick="reloadStream()">
+                <i class="fas fa-redo"></i>
+                <div class="nav-text">Reload</div>
+            </button>
+            
+            <button class="nav-btn" id="alarmBtn" onclick="toggleAlarm()">
+                <i class="fas fa-bell-slash"></i>
+                <div class="nav-text">Alarm Off</div>
+            </button>
+        </div>
+        
+        <div class="emergency-row">
+            <button class="nav-btn" onclick="window.location.href='/members'">
+                <i class="fas fa-users"></i>
+                <div class="nav-text">Members</div>
+            </button>
+            
+            <button class="nav-btn" onclick="window.location.href='/events'">
+                <i class="fas fa-folder"></i>
+                <div class="nav-text">Recent Events</div>
+            </button>
+        </div>
+        
+        <div class="emergency-row" style="margin-top: 15px;">
+            <button class="nav-btn danger" onclick="triggerEmergency()" style="grid-column: span 2;">
+                <i class="fas fa-phone"></i>
+                <div class="nav-text">Emergency</div>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Audio Element for Alarm -->
+    <audio id="alarmSound" src="/static/sounds/alarm.wav?v=2" loop preload="auto"></audio>
+    
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        let alarmEnabled = localStorage.getItem('alarmEnabled') !== 'false'; // Load from localStorage
+        let isDetecting = false;
+        
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Connect to SocketIO
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            startDetection();
+        });
+        
+        // Receive video frames
+        socket.on('video_frame', (data) => {
+            document.getElementById('videoFrame').src = 'data:image/jpeg;base64,' + data.frame;
+            document.getElementById('fpsCounter').textContent = data.fps;
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.getElementById('statusBadge').textContent = 'LIVE';
+            document.getElementById('statusBadge').className = 'status-badge status-active';
+            
+            // Update resolution
+            const img = document.getElementById('videoFrame');
+            if (img.naturalWidth) {
+                document.getElementById('resolution').textContent = `${img.naturalWidth}x${img.naturalHeight}`;
+            }
+        });
+        
+        // Theft alert
+        socket.on('theft_alert', (data) => {
+            console.log('Theft alert received:', data);
+            console.log('Alarm enabled:', alarmEnabled);
+            
+            showTheftAlert();
+            
+            if (alarmEnabled) {
+                console.log('Playing alarm...');
+                playAlarm();
+            } else {
+                console.log('Alarm is disabled, not playing sound');
+            }
+            
+            // Show notification if supported
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('🚨 THEFT ALERT', {
+                    body: `Theft detected with ${data.bag_count} bag(s)`,
+                    icon: '/static/icon-192.png',
+                    vibrate: [200, 100, 200]
+                });
+            }
+        });
+        
+        // Notifications
+        socket.on('notification', (data) => {
+            console.log('Notification:', data.message);
+        });
+        
+        // Emergency call
+        socket.on('emergency_call', (data) => {
+            alert(`Emergency call triggered to: ${data.contact}`);
+        });
+        
+        // Start detection
+        function startDetection() {
+            fetch('/api/start-detection', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'same-origin'
+            })
+            .then(res => {
+                if (!res.ok) {
+                    console.error('Server error:', res.status, res.statusText);
+                    return res.text().then(text => {
+                        console.error('Response:', text);
+                        throw new Error('Server returned ' + res.status);
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    isDetecting = true;
+                    console.log('Detection started');
+                } else if (data.message && data.message.includes('already running')) {
+                    // Detection already running, just continue
+                    console.log('Detection already active');
+                    isDetecting = true;
+                } else {
+                    console.error('Failed to start detection:', data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error starting detection:', err);
+            });
+        }
+        
+        // Reload stream
+        function reloadStream() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+            location.reload();
+        }
+        
+        // Toggle alarm
+        function toggleAlarm() {
+            alarmEnabled = !alarmEnabled;
+            localStorage.setItem('alarmEnabled', alarmEnabled); // Save to localStorage
+            console.log('Alarm toggled. Now:', alarmEnabled ? 'ENABLED' : 'DISABLED');
+            
+            const btn = document.getElementById('alarmBtn');
+            const alarm = document.getElementById('alarmSound');
+            
+            if (alarmEnabled) {
+                // Alarm is ON - show bell icon and "Alarm: ON"
+                btn.innerHTML = '<i class="fas fa-bell"></i><div class="nav-text">Alarm: ON</div>';
+            } else {
+                // Alarm is OFF - show muted bell icon and "Alarm: OFF"
+                btn.innerHTML = '<i class="fas fa-bell-slash"></i><div class="nav-text">Alarm: OFF</div>';
+                alarm.pause();
+                alarm.currentTime = 0;
+            }
+        }
+        
+        // Initialize alarm button state on load
+        function initAlarmButton() {
+            const btn = document.getElementById('alarmBtn');
+            console.log('Initializing alarm button. Alarm is:', alarmEnabled ? 'ENABLED' : 'DISABLED');
+            
+            if (alarmEnabled) {
+                // Alarm is ON - show bell icon and "Alarm: ON"
+                btn.innerHTML = '<i class="fas fa-bell"></i><div class="nav-text">Alarm: ON</div>';
+            } else {
+                // Alarm is OFF - show muted bell icon and "Alarm: OFF"
+                btn.innerHTML = '<i class="fas fa-bell-slash"></i><div class="nav-text">Alarm: OFF</div>';
+            }
+        }
+        initAlarmButton();
+        
+        // Check if alarm sound loaded successfully
+        const alarmSound = document.getElementById('alarmSound');
+        alarmSound.addEventListener('canplaythrough', () => {
+            console.log('Alarm audio loaded and ready to play');
+        });
+        alarmSound.addEventListener('error', (e) => {
+            console.error('Alarm audio failed to load:', e);
+            console.error('Error src:', alarmSound.src);
+        });
+        
+        // Play alarm
+        function playAlarm() {
+            const alarm = document.getElementById('alarmSound');
+            console.log('Attempting to play alarm...');
+            console.log('Alarm src:', alarm.src);
+            console.log('Alarm readyState:', alarm.readyState);
+            
+            // Reset to start if already playing
+            alarm.currentTime = 0;
+            
+            alarm.play().then(() => {
+                console.log('Alarm playing successfully');
+            }).catch(e => {
+                console.error('Alarm play failed:', e);
+                console.error('Error details:', e.message);
+            });
+        }
+        
+        // Show theft alert banner
+        function showTheftAlert() {
+            const banner = document.getElementById('alertBanner');
+            banner.classList.add('show');
+            
+            setTimeout(() => {
+                banner.classList.remove('show');
+            }, 10000);
+        }
+        
+        // Trigger emergency
+        function triggerEmergency() {
+            showConfirm('This will trigger an emergency call. Are you sure?', (confirmed) => {
+                if (confirmed) {
+                    fetch('/api/emergency', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'}
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        showAlert(data.message, 'Emergency');
+                    });
+                }
+            }, 'Emergency Call');
+        }
+        
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                console.log('Service Worker registered');
+            });
+        }
+        
+        // Custom Modal System
+        let confirmCallback = null;
+        
+        function showAlert(message, title = 'Alert') {
+            document.getElementById('alertTitle').textContent = title;
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('customAlert').classList.add('show');
+        }
+        
+        function closeCustomAlert() {
+            document.getElementById('customAlert').classList.remove('show');
+        }
+        
+        function showConfirm(message, callback, title = 'Confirm') {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('customConfirm').classList.add('show');
+            confirmCallback = callback;
+        }
+        
+        function confirmAction(result) {
+            document.getElementById('customConfirm').classList.remove('show');
+            if (confirmCallback) {
+                confirmCallback(result);
+                confirmCallback = null;
+            }
+        }
+    </script>
+    
+    <!-- Custom Alert Modal -->
+    <div id="customAlert" class="modal">
+        <div class="modal-content" style="max-width: 400px; background: #2c3e50; border-radius: 15px; padding: 0;">
+            <div style="background: rgba(26, 29, 46, 0.95); padding: 15px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px 15px 0 0;">
+                <div id="alertTitle" style="font-size: 20px; font-weight: bold;">Alert</div>
+            </div>
+            <div id="alertMessage" style="padding: 30px 20px; text-align: center; font-size: 16px;"></div>
+            <button onclick="closeCustomAlert()" style="background: #3498db; border: none; width: calc(100% - 40px); margin: 0 20px 20px; padding: 12px; border-radius: 8px; color: #ffffff; font-size: 16px; font-weight: 500; cursor: pointer;">
+                OK
+            </button>
+        </div>
+    </div>
+    
+    <!-- Custom Confirm Modal -->
+    <div id="customConfirm" class="modal">
+        <div class="modal-content" style="max-width: 400px; background: #2c3e50; border-radius: 15px; padding: 0;">
+            <div style="background: rgba(26, 29, 46, 0.95); padding: 15px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px 15px 0 0;">
+                <div id="confirmTitle" style="font-size: 20px; font-weight: bold;">Confirm</div>
+            </div>
+            <div id="confirmMessage" style="padding: 30px 20px; text-align: center; font-size: 16px;"></div>
+            <div style="display: flex; gap: 10px; padding: 0 20px 20px;">
+                <button onclick="confirmAction(false)" style="flex: 1; background: rgba(255, 255, 255, 0.1); border: none; padding: 12px; border-radius: 8px; color: #ffffff; font-size: 16px; cursor: pointer;">
+                    Cancel
+                </button>
+                <button onclick="confirmAction(true)" style="flex: 1; background: #3498db; border: none; padding: 12px; border-radius: 8px; color: #ffffff; font-size: 16px; font-weight: 500; cursor: pointer;">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            padding: 20px;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</body>
+</html>
